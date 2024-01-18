@@ -45,7 +45,7 @@ fn main() {
 
 fn welcome_the_avatar() {
     set_color(Color::Cyan);
-    println!("Water. Earth. Fire. Air.\n Long ago, the four temperaments thrived in harmony. Then, everything changed when the Rational Nation attacked.\n Only the Avatar, master of all four temperaments, could bring balance, but when the world needed them most, they vanished.\n A hundred years passed, and my sibling and I discovered the new Avatar, an idealist named Keirsey.");
+    println!("Rational. Artisan. Idealist. Guardian.\n Long ago, the four temperaments thrived in harmony. Then, everything changed when the Idealist Nation attacked.\n Only the Avatar, master of all four temperaments, could bring balance, but when the world needed them most, they vanished.\n A hundred years passed, and my sibling and I discovered the new Avatar, an Artisan named Keirsey.");
     set_color(Color::Reset);
 }
 
