@@ -392,7 +392,6 @@ mod tests {
                 };
                 keirsey.answer_grid.add_score(score);
             }
-            dbg!(&keirsey.answer_grid);
         }
 
         let answer_array = ["ESTJ","ISTJ","ENTJ","ESFJ","ESTP","INTJ","ISFJ","ISTP","ENFJ","ESFP","ENTP","INFJ","ISFP","INTP","ENFP","INFP"];
