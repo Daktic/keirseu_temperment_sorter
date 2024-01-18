@@ -477,4 +477,25 @@ mod tests {
         }
 
     }
+
+    #[test]
+    fn call_teh_avatar() {
+        let mut keirsey = Keirsey::new(
+            serde_json::from_reader(
+                BufReader::new(
+                    File::open("questions.json").unwrap()
+                )
+            ).unwrap()
+        );
+        for j in 0..70 {
+            if j % 2 == 0 {
+                keirsey.answer_grid.add_score(Score::new(Answer::B));
+            } else {
+                keirsey.answer_grid.add_score(Score::new(Answer::A));
+            }
+        }
+        let temp = keirsey.answer_grid.get_temperament();
+        assert_eq!(temp, "XXXX");
+        assert_eq!(keirsey.print_temperament(), welcome_the_avatar())
+    }
 }
