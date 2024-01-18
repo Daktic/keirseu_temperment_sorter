@@ -1,0 +1,4 @@
+/target
+/compiled_binaries/windows
+/compiled_binaries/mac
+/compiled_binaries/linux
