@@ -68,7 +68,7 @@ fn main() {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 struct Keirsey {
     questionnaire: Questionnaire,
     answer_grid: ScoringGrid,
@@ -94,11 +94,11 @@ impl Keirsey {
 }
 
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 struct Questionnaire {
     questions: Vec<Question>,
 }
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 struct Question {
     question: String,
     options: Vec<Options>,
@@ -136,7 +136,7 @@ impl Question {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 struct Score {
     value: Answer,
 }
@@ -149,7 +149,7 @@ impl Score {
 
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 struct ScoringGrid {
     scores: Vec<Vec<Score>>,
 }
@@ -244,13 +244,13 @@ impl ScoringGrid {
 }
 
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "lowercase")]
 enum Options {
     A(String),
     B(String),
 }
-#[derive(Debug, Deserialize, PartialEq)]
+#[derive(Debug, Deserialize, PartialEq, Clone)]
 enum Answer {
     A,
     B,
@@ -351,34 +351,56 @@ mod tests {
 
     #[test]
     fn test_temperaments() {
-        let mut keirsey_a: Keirsey = Keirsey::new(
+        let mut keirseys:Vec<Keirsey> = vec![];
+
+        let og_keirsey = Keirsey::new(
             serde_json::from_reader(
                 BufReader::new(
                     File::open("questions.json").unwrap()
                 )
             ).unwrap()
         );
-        let mut keirsey_b: Keirsey = Keirsey::new(
-            serde_json::from_reader(
-                BufReader::new(
-                    File::open("questions.json").unwrap()
-                )
-            ).unwrap()
-        );
 
-        for _ in keirsey_a.questionnaire.questions.iter().enumerate() {
-            keirsey_a.answer_grid.add_score(Score::new(Answer::A));
-        }
-        for _ in keirsey_b.questionnaire.questions.iter().enumerate() {
-            keirsey_b.answer_grid.add_score(Score::new(Answer::B));
+        for i in 0..17 {
+            keirseys.push(og_keirsey.clone())
         }
 
-        keirsey_a.answer_grid.get_temperament();
-        keirsey_b.answer_grid.get_temperament();
+        for (i, mut keirsey) in keirseys.iter_mut().enumerate() {
+            for j in 0..=71 {
+                let pattern_variable = match i {
+                    0 => false,                                                                 // ESTJ
+                    1 => j % 7 == 0,                                                            // ISTJ
+                    2 => (j-1) % 7 == 0,                                                        // ENTJ
+                    3 => (j-2) % 7 == 0,                                                        // ESFJ
+                    4 => (j-3) % 7 == 0,                                                        // ESTP
+                    5 => j % 7 == 0 || (j-1) % 7 == 0,                                          // INTJ
+                    6 => j % 7 == 0 || (j-2) % 7 == 0,                                          // ISFJ
+                    7 => j % 7 == 0 || (j-3) % 7 == 0,                                          // ISTP
+                    8 => (j-1) % 7 == 0 || (j-2) % 7 == 0,                                      // ENFJ
+                    9 => (j-2) % 7 == 0 || (j-2) % 7 == 0,                                      // ESFP
+                    10 => (j-1) % 7 == 0 || (j-3) % 7 == 0,                                     // ENTP
+                    11 => j % 7 == 0 || (j-1) % 7 == 0 || (j-2) % 7 == 0,                       // INFJ
+                    12 => j % 7 == 0 || (j-2) % 7 == 0 || (j-2) % 7 == 0,                       // ISFP
+                    13 => j % 7 == 0 || (j-1) % 7 == 0 || (j-3) % 7 == 0,                       // INTP
+                    14 => (j-1) % 7 == 0 || (j-2) % 7 == 0 || (j-2) % 7 == 0,                   // ENFP
+                    _ => {true}                                                                 // INFP
+                };
+                let score = if pattern_variable {
+                    Score::new(Answer::B)
+                } else {
+                    Score::new(Answer::A)
+                };
 
-        // All A answers produces ESTJ and all B answers produces INFP
-        assert_eq!(keirsey_a.answer_grid.get_temperament(), "ESTJ".to_string());
-        assert_eq!(keirsey_b.answer_grid.get_temperament(), "INFP".to_string());
+                keirsey.answer_grid.add_score(score)
+            }
+        }
+
+        let answer_array = ["ESTJ","ISTJ","ENTJ","ESFJ","ESTP","INTJ","ISFJ","ISTP","ENFJ","ESFP","ENTP","INFJ","ISFP","INTP","ENFP","INFP"];
+
+        for (i, keirsey) in keirseys.iter().enumerate() {
+            assert_eq!(keirsey.answer_grid.get_temperament(), answer_array[i]);
+        }
+
 
     }
 }
