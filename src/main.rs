@@ -56,7 +56,12 @@ fn main() {
                 "ESTJ" => {temperaments.print(TemperamentType::Guardian)},
                 _ => {println!("Error: Temperament not found")}
             }
-
+            println!("Would you like to take the test again? (Y/N)");
+            let mut input = String::new();
+            std::io::stdin().read_line(&mut input).expect("Failed to read line");
+            if input.trim().to_uppercase() == "Y" || input.trim().to_uppercase() == "YES" {
+                main();
+            }
         }
         Err(error) => println!("Error: {:?}", error),
     }
