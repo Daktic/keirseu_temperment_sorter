@@ -361,12 +361,12 @@ mod tests {
             ).unwrap()
         );
 
-        for i in 0..17 {
+        for _ in 0..16 {
             keirseys.push(og_keirsey.clone())
         }
 
         for (i, mut keirsey) in keirseys.iter_mut().enumerate() {
-            for j in 0..=71 {
+            for j in 0..70 {
                 let pattern_variable = match i {
                     0 => false,                                                                 // ESTJ
                     1 => j % 7 == 0,                                                            // ISTJ
@@ -390,9 +390,9 @@ mod tests {
                 } else {
                     Score::new(Answer::A)
                 };
-
-                keirsey.answer_grid.add_score(score)
+                keirsey.answer_grid.add_score(score);
             }
+            dbg!(&keirsey.answer_grid);
         }
 
         let answer_array = ["ESTJ","ISTJ","ENTJ","ESFJ","ESTP","INTJ","ISFJ","ISTP","ENFJ","ESFP","ENTP","INFJ","ISFP","INTP","ENFP","INFP"];
