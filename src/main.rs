@@ -26,7 +26,6 @@ fn main() {
             };
 
             let temperaments:Temperaments = serde_json::from_reader(BufReader::new(File::open("temperaments.json").unwrap())).unwrap();
-                println!("{:?}", temperaments);
 
             let mut keirsey = Keirsey::new(questionnaire);
 
