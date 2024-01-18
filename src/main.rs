@@ -115,9 +115,9 @@ impl Question {
         // Await input from the user for the answer
         let mut input = String::new();
         std::io::stdin().read_line(&mut input).expect("Failed to read line");
-        if input.trim() == "A" {
+        if input.trim().to_uppercase() == "A" {
             return Answer::A;
-        } else if input.trim() == "B" {
+        } else if input.trim().to_uppercase() == "B" {
             return Answer::B;
         } else {
             clear_terminal();
