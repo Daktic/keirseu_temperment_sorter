@@ -303,6 +303,7 @@ fn clear_terminal() {
     execute!(std::io::stdout(), Clear(ClearType::All)).unwrap();
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
     #[test]
