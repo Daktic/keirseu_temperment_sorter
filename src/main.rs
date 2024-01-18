@@ -323,8 +323,8 @@ mod tests {
         scoring_grid.add_score(Score::new(Answer::A));
         scoring_grid.add_score(Score::new(Answer::A));
         scoring_grid.add_score(Score::new(Answer::B));
-        dbg!(&scoring_grid);
 
+        // On the the 8th addition it will add a new array to the scores array
         assert_eq!(scoring_grid.scores.len(), 2);
 
     }
@@ -343,7 +343,9 @@ mod tests {
             keirsey.answer_grid.add_score(Score::new(Answer::A));
         }
 
-        dbg!(&keirsey);
         keirsey.answer_grid.tally();
+
+        // The tally method should return a vector of tuples with the first value being the number of A's and the second being the number of B's
+        assert_eq!(keirsey.answer_grid.tally(), vec![(10, 0), (10, 0), (10, 0), (20, 0), (10, 0), (10, 0), (20, 0), (10, 0), (10, 0), (20, 0)]);
     }
 }
