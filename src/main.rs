@@ -31,31 +31,8 @@ fn main() {
             let mut keirsey = Keirsey::new(questionnaire);
 
             keirsey.ask_questions();
-            let temperament = keirsey.answer_grid.get_temperament();
-            set_color(Color::White);
-            println!("Your temperament is: ");
-            set_color(Color::Green);
-            print!("{}\n", temperament);
-            set_color(Color::Reset);
-            match temperament.as_str() {
-                "INFP" => {temperaments.print(TemperamentType::Idealist)},
-                "INFJ" => {temperaments.print(TemperamentType::Idealist)},
-                "INTP" => {temperaments.print(TemperamentType::Rational)},
-                "INTJ" => {temperaments.print(TemperamentType::Rational)},
-                "ISFP" => {temperaments.print(TemperamentType::Artisan)},
-                "ISFJ" => {temperaments.print(TemperamentType::Guardian)},
-                "ISTP" => {temperaments.print(TemperamentType::Artisan)},
-                "ISTJ" => {temperaments.print(TemperamentType::Guardian)},
-                "ENFP" => {temperaments.print(TemperamentType::Idealist)},
-                "ENFJ" => {temperaments.print(TemperamentType::Idealist)},
-                "ENTP" => {temperaments.print(TemperamentType::Rational)},
-                "ENTJ" => {temperaments.print(TemperamentType::Rational)},
-                "ESFP" => {temperaments.print(TemperamentType::Artisan)},
-                "ESFJ" => {temperaments.print(TemperamentType::Guardian)},
-                "ESTP" => {temperaments.print(TemperamentType::Artisan)},
-                "ESTJ" => {temperaments.print(TemperamentType::Guardian)},
-                _ => {println!("Error: Temperament not found")}
-            }
+            keirsey.answer_grid.print_temperment_info();
+
             println!("Would you like to take the test again? (Y/N)");
             let mut input = String::new();
             std::io::stdin().read_line(&mut input).expect("Failed to read line");
@@ -239,6 +216,34 @@ impl ScoringGrid {
             }
         }
         temperment
+    }
+
+    fn print_temperment_info(&self) {
+        let temperament = self.get_temperament();
+        set_color(Color::White);
+        println!("Your temperament is: ");
+        set_color(Color::Green);
+        print!("{}\n", temperament);
+        set_color(Color::Reset);
+        match temperament.as_str() {
+            "INFP" => {Temperaments::print(TemperamentType::Idealist)},
+            "INFJ" => {temperament.print(TemperamentType::Idealist)},
+            "INTP" => {temperament.print(TemperamentType::Rational)},
+            "INTJ" => {temperament.print(TemperamentType::Rational)},
+            "ISFP" => {temperament.print(TemperamentType::Artisan)},
+            "ISFJ" => {temperament.print(TemperamentType::Guardian)},
+            "ISTP" => {temperament.print(TemperamentType::Artisan)},
+            "ISTJ" => {temperament.print(TemperamentType::Guardian)},
+            "ENFP" => {temperament.print(TemperamentType::Idealist)},
+            "ENFJ" => {temperament.print(TemperamentType::Idealist)},
+            "ENTP" => {temperament.print(TemperamentType::Rational)},
+            "ENTJ" => {temperament.print(TemperamentType::Rational)},
+            "ESFP" => {temperament.print(TemperamentType::Artisan)},
+            "ESFJ" => {temperament.print(TemperamentType::Guardian)},
+            "ESTP" => {temperament.print(TemperamentType::Artisan)},
+            "ESTJ" => {temperament.print(TemperamentType::Guardian)},
+            _ => {println!("Error: Temperament not found")}
+        }
     }
 }
 
