@@ -1,3 +1,4 @@
+use std::fmt::Display;
 use std::fs::File;
 use std::io::BufReader;
 use serde::Deserialize;
@@ -34,7 +35,7 @@ fn main() {
             set_color(Color::White);
             println!("Your temperament is: ");
             set_color(Color::Green);
-            print!("{}", temperament);
+            print!("{}\n", temperament);
             set_color(Color::Reset);
             match temperament.as_str() {
                 "INFP" => {temperaments.print(TemperamentType::Idealist)},
@@ -264,13 +265,25 @@ enum TemperamentType {
     Idealist,
     Rational,
 }
+
+impl Display for TemperamentType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            TemperamentType::Artisan => write!(f, "- Artisan: "),
+            TemperamentType::Guardian => write!(f, "- Guardian: "),
+            TemperamentType::Idealist => write!(f, "- Idealist: "),
+            TemperamentType::Rational => write!(f, "- Rational: "),
+        }
+    }
+
+}
 impl Temperaments {
     fn print(&self, temperment: TemperamentType) {
         match temperment {
-            TemperamentType::Artisan => println!("{}", self.artisan),
-            TemperamentType::Guardian => println!("{}", self.guardian),
-            TemperamentType::Idealist => println!("{}", self.idealist),
-            TemperamentType::Rational => println!("{}", self.rational),
+            TemperamentType::Artisan => println!("{}\n{}", temperment, self.artisan),
+            TemperamentType::Guardian => println!("{}\n{}", temperment, self.guardian),
+            TemperamentType::Idealist => println!("{}\n{}", temperment, self.idealist),
+            TemperamentType::Rational => println!("{}\n{}", temperment, self.rational),
         }
     }
 
