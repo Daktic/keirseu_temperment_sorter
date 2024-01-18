@@ -215,28 +215,36 @@ impl ScoringGrid {
         for (i, group) in groups.iter().enumerate() {
             dbg!(i, group);
             if i == 0 {
-                if group.0 >= group.1 {
+                if group.0 > group.1 {
                     temperment.push('E');
-                } else {
+                } else if group.0 < group.1 {
                     temperment.push('I');
+                } else {
+                    temperment.push('X');
                 }
             } else if i == 3 {
-                if group.0 >= group.1 {
+                if group.0 > group.1 {
                     temperment.push('S');
-                } else {
+                } else if group.0 < group.1 {
                     temperment.push('N');
+                } else {
+                    temperment.push('X');
                 }
             } else if i == 6 {
-                if group.0 >= group.1 {
+                if group.0 > group.1 {
                     temperment.push('T');
-                } else {
+                }  else if group.0 < group.1 {
                     temperment.push('F');
+                } else {
+                    temperment.push('X');
                 }
             } else if i == 9 {
-                if group.0 >= group.1 {
+                if group.0 > group.1 {
                     temperment.push('J');
-                } else {
+                } else if group.0 < group.1 {
                     temperment.push('P');
+                } else {
+                    temperment.push('X');
                 }
             }
         }
@@ -371,19 +379,20 @@ mod tests {
                 let pattern_variable = match i {
                     0 => false,                                                                 // ESTJ
                     1 => j % 7 == 0,                                                            // ISTJ
-                    2 => (j-1) % 7 == 0,                                                        // ENTJ
-                    3 => (j-2) % 7 == 0,                                                        // ESFJ
-                    4 => (j-3) % 7 == 0,                                                        // ESTP
-                    5 => j % 7 == 0 || (j-1) % 7 == 0,                                          // INTJ
-                    6 => j % 7 == 0 || (j-2) % 7 == 0,                                          // ISFJ
-                    7 => j % 7 == 0 || (j-3) % 7 == 0,                                          // ISTP
-                    8 => (j-1) % 7 == 0 || (j-2) % 7 == 0,                                      // ENFJ
-                    9 => (j-2) % 7 == 0 || (j-2) % 7 == 0,                                      // ESFP
-                    10 => (j-1) % 7 == 0 || (j-3) % 7 == 0,                                     // ENTP
-                    11 => j % 7 == 0 || (j-1) % 7 == 0 || (j-2) % 7 == 0,                       // INFJ
-                    12 => j % 7 == 0 || (j-2) % 7 == 0 || (j-2) % 7 == 0,                       // ISFP
-                    13 => j % 7 == 0 || (j-1) % 7 == 0 || (j-3) % 7 == 0,                       // INTP
-                    14 => (j-1) % 7 == 0 || (j-2) % 7 == 0 || (j-2) % 7 == 0,                   // ENFP
+                    2 => (j-1) % 7 == 0 || j == 2,                                              // ENTJ
+                    3 => (j-2) % 7 == 0 && j != 2 || (j-3) % 7 == 0 || j == 4,                  // ESFJ
+                    4 => (j-3) % 7 == 0 && j == 4 || (j-5) % 7 == 0 || j == 6,                  // ESTP
+                    5 => j % 7 == 0 || (j-1) % 7 == 0 || j == 2,                                // INTJ
+                    6 => j % 7 == 0 || (j-2) % 7 == 0 && j != 2 || (j-3) % 7 == 0 || j == 4,    // ISFJ
+                    7 => j % 7 == 0 || (j-5) % 7 == 0 || j == 6,                                // ISTP
+                    8 => (j-1) % 7 == 0 || j == 2 || (j-3) % 7 == 0 || j == 4,                  // ENFJ
+                    9 => (j-3) % 7 == 0 || j == 4 || (j-5) % 7 == 0 || j == 6,                  // ESFP
+                    10 => (j-1) % 7 == 0 || j == 2 || (j-5) % 7 == 0 || j == 6,                 // ENTP
+                    11 => j % 7 == 0 || (j-1) % 7 == 0 || j == 2 || (j-3) % 7 == 0 || j == 4,   // INFJ
+                    12 => j % 7 == 0 || (j-3) % 7 == 0 || j == 4 || (j-5) % 7 == 0 || j == 6,   // ISFP
+                    13 => j % 7 == 0 || (j-1) % 7 == 0 || j == 2 || (j-5) % 7 == 0 || j == 6,   // INTP
+                    14 => (j-1) % 7 == 0 || j == 2 || (j-3) % 7 == 0 || j == 4 || (j-5) % 7 == 0 || j == 6, // ENFP
+                    15 => (j-1) % 7 == 0,                                                       // EXTJ
                     _ => {true}                                                                 // INFP
                 };
                 let score = if pattern_variable {
@@ -405,7 +414,8 @@ mod tests {
         //
         // }
 
-        dbg!(&keirseys[3].answer_grid.tally(), &keirseys[3].answer_grid.get_temperament());
-        assert_eq!(keirseys[3].answer_grid.get_temperament(), answer_array[3]);
+        let idx = 14;
+        dbg!(&keirseys[idx].answer_grid.tally(), &keirseys[idx].answer_grid.get_temperament());
+        assert_eq!(keirseys[idx].answer_grid.get_temperament(), answer_array[idx]);
     }
 }
