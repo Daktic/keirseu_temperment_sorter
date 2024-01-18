@@ -153,7 +153,7 @@ impl ScoringGrid {
         }
     }
 
-    fn tally(&self) {
+    fn tally(&self) -> Vec<(u8, u8)> {
         let mut groups:Vec<(u8, u8)> = vec![];
 
         let mut i = 0;
@@ -186,6 +186,40 @@ impl ScoringGrid {
             }
             i += 1;
         }
+        groups
+    }
+
+    fn get_temperament(&self) -> String {
+        let groups = self.tally();
+        let mut temperment = String::new();
+        for (i, group) in groups.iter().enumerate() {
+            if i == 0 {
+                if group.0 > group.1 {
+                    temperment.push('E');
+                } else {
+                    temperment.push('I');
+                }
+            } else if i == 1 {
+                if group.0 > group.1 {
+                    temperment.push('S');
+                } else {
+                    temperment.push('N');
+                }
+            } else if i == 2 {
+                if group.0 > group.1 {
+                    temperment.push('T');
+                } else {
+                    temperment.push('F');
+                }
+            } else if i == 3 {
+                if group.0 > group.1 {
+                    temperment.push('J');
+                } else {
+                    temperment.push('P');
+                }
+            }
+        }
+        temperment
     }
 }
 
