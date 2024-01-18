@@ -1,10 +1,9 @@
-use std::fmt::Display;
 use std::fs::File;
 use std::io::BufReader;
 use serde::Deserialize;
 use crossterm::{execute,
                 terminal::{ClearType, Clear, SetTitle},
-                style::{Print, SetForegroundColor, Color},
+                style::{SetForegroundColor, Color},
 };
 
 
@@ -36,7 +35,7 @@ fn main() {
             println!("Your temperament is: ");
             set_color(Color::Green);
             print!("{}", temperament);
-            change_color(Color::Reset);
+            set_color(Color::Reset);
             match temperament.as_str() {
                 "INFP" => {temperaments.print(TemperamentType::Idealist)},
                 "INFJ" => {temperaments.print(TemperamentType::Idealist)},
@@ -81,7 +80,7 @@ impl Keirsey {
         for (i, question) in self.questionnaire.questions.iter().enumerate() {
             println!("Question {} of {}", i+1, self.questionnaire.questions.len());
             let answer = question.ask();
-            self.answer_grid.add_score(Score::new((i+1) as u32, answer));
+            self.answer_grid.add_score(Score::new(answer));
             clear_terminal();
         }
     }
@@ -132,13 +131,11 @@ impl Question {
 
 #[derive(Debug, Deserialize)]
 struct Score {
-    id: u32,
     value: Answer,
 }
 impl Score {
-    fn new(id: u32, value: Answer) -> Score {
+    fn new(value: Answer) -> Score {
         Score {
-            id,
             value,
         }
     }
@@ -287,20 +284,6 @@ fn clear_terminal() {
     execute!(std::io::stdout(), Clear(ClearType::All)).unwrap();
 }
 
-fn print_score(a:u8,b:u8) {
-    set_color(Color::Reset);
-    println!("Score:");
-    execute!(std::io::stdout(), Print("A: ")).unwrap();
-    set_color(Color::Green);
-    execute!(std::io::stdout(), Print(a)).unwrap();
-    print!(" ");
-    set_color(Color::Reset);
-    execute!(std::io::stdout(), Print("B: ")).unwrap();
-    set_color(Color::Green);
-    execute!(std::io::stdout(), Print(b)).unwrap();
-    print!("\n\n");
-}
-
 mod tests {
     use super::*;
     #[test]
@@ -313,14 +296,14 @@ mod tests {
     #[test]
     fn test_scoring_grid() {
         let mut scoring_grid = ScoringGrid::new();
-        scoring_grid.add_score(Score::new(1, Answer::A));
-        scoring_grid.add_score(Score::new(2, Answer::B));
-        scoring_grid.add_score(Score::new(3, Answer::B));
-        scoring_grid.add_score(Score::new(4, Answer::A));
-        scoring_grid.add_score(Score::new(5, Answer::A));
-        scoring_grid.add_score(Score::new(6, Answer::A));
-        scoring_grid.add_score(Score::new(7, Answer::A));
-        scoring_grid.add_score(Score::new(8, Answer::B));
+        scoring_grid.add_score(Score::new(Answer::A));
+        scoring_grid.add_score(Score::new(Answer::B));
+        scoring_grid.add_score(Score::new(Answer::B));
+        scoring_grid.add_score(Score::new(Answer::A));
+        scoring_grid.add_score(Score::new(Answer::A));
+        scoring_grid.add_score(Score::new(Answer::A));
+        scoring_grid.add_score(Score::new(Answer::A));
+        scoring_grid.add_score(Score::new(Answer::B));
         dbg!(&scoring_grid);
 
         assert_eq!(scoring_grid.scores.len(), 2);
