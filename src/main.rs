@@ -56,7 +56,7 @@ impl Keirsey {
         for (i, question) in self.questionnaire.questions.iter().enumerate() {
             println!("Question {} of {}", i+1, self.questionnaire.questions.len());
             let answer = question.ask();
-            self.answer_grid.add_score(Score::new(i as u32, answer));
+            self.answer_grid.add_score(Score::new((i+1) as u32, answer));
             clear_terminal();
         }
     }
@@ -151,9 +151,44 @@ impl ScoringGrid {
         } else {
             self.scores[score_array_length-1].push(score);
         }
-
     }
-}
+
+    fn tally(&self) {
+        let mut groups:Vec<(u8, u8)> = vec![];
+
+        let mut i = 0;
+        while i < 7 {
+            let mut count_a:u8 = 0;
+            let mut count_b:u8 = 0;
+            for scores in &self.scores {
+
+                match scores[i].value {
+                    Answer::A => count_a += 1,
+                    Answer::B => count_b += 1,
+                }
+            };
+            match i {
+                2 => {
+                    groups.push((count_a, count_b));
+                    groups.push((count_a+ groups[1].0, count_b + groups[1].1));
+                },
+                4 => {
+                    groups.push((count_a, count_b));
+                    groups.push((count_a + groups[4].0, count_b + groups[4].1));
+                },
+                6 => {
+                    groups.push((count_a, count_b));
+                    groups.push((count_a + groups[7].0, count_b + groups[7].1));
+                },
+                _ => {
+                    groups.push((count_a, count_b));
+                },
+            }
+            i += 1;
+        }
+        dbg!(groups);
+        }
+    }
 
 
 #[derive(Debug, Deserialize)]
@@ -218,58 +253,19 @@ mod tests {
 
     #[test]
     fn test_talley() {
-        let mut keirsey = Keirsey::new(Questionnaire {
-            questions: vec![
-                Question {
-                    question: "Question 1".to_string(),
-                    options: vec![
-                        Options::A("Option 1".to_string()),
-                        Options::B("Option 2".to_string()),
-                    ],
-                },
-                Question {
-                    question: "Question 2".to_string(),
-                    options: vec![
-                        Options::A("Option 1".to_string()),
-                        Options::B("Option 2".to_string()),
-                    ],
-                },
-                Question {
-                    question: "Question 3".to_string(),
-                    options: vec![
-                        Options::A("Option 1".to_string()),
-                        Options::B("Option 2".to_string()),
-                    ],
-                },
-                Question {
-                    question: "Question 4".to_string(),
-                    options: vec![
-                        Options::A("Option 1".to_string()),
-                        Options::B("Option 2".to_string()),
-                    ],
-                },
-                Question {
-                    question: "Question 5".to_string(),
-                    options: vec![
-                        Options::A("Option 1".to_string()),
-                        Options::B("Option 2".to_string()),
-                    ],
-                },
-                Question {
-                    question: "Question 6".to_string(),
-                    options: vec![
-                        Options::A("Option 1".to_string()),
-                        Options::B("Option 2".to_string()),
-                    ],
-                },
-                Question {
-                    question: "Question 7".to_string(),
-                    options: vec![
-                        Options::A("Option 1".to_string()),
-                        Options::B("Option 2".to_string()),
-                    ],
-                },
-            ],
-        });
+        let mut keirsey: Keirsey = Keirsey::new(
+            serde_json::from_reader(
+                BufReader::new(
+                    File::open("questions.json").unwrap()
+                )
+            ).unwrap()
+        );
+
+        for (i, question) in keirsey.questionnaire.questions.iter().enumerate() {
+            keirsey.answer_grid.add_score(Score::new((i+1) as u32, Answer::A));
+        }
+
+        dbg!(&keirsey);
+        keirsey.answer_grid.tally();
     }
 }
