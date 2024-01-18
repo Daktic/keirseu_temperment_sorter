@@ -7,6 +7,11 @@ I took the liberty of pre-compiling the program for you.
 
 All you have to do is download the zip file that matches your operating system, extract it, and run the executable file.
 
+#### download links
+- [Windows](https://github.com/Daktic/keirseu_temperment_sorter/blob/master/compiled_binaries/windows.zip)
+- [Mac](https://github.com/Daktic/keirseu_temperment_sorter/blob/master/compiled_binaries/mac.zip)
+- [Linux](https://github.com/Daktic/keirseu_temperment_sorter/blob/master/compiled_binaries/linux.zip)
+
 If you would rather compile it yourself, you can do that too. You will need to download the source code and compile it with rustc.
 
 ----
