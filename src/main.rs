@@ -25,36 +25,11 @@ fn main() {
                 }
             };
 
-            let temperaments:Temperaments = serde_json::from_reader(BufReader::new(File::open("temperaments.json").unwrap())).unwrap();
-
             let mut keirsey = Keirsey::new(questionnaire);
 
             keirsey.ask_questions();
-            let temperament = keirsey.answer_grid.get_temperament();
-            set_color(Color::White);
-            println!("Your temperament is: ");
-            set_color(Color::Green);
-            print!("{}\n", temperament);
-            set_color(Color::Reset);
-            match temperament.as_str() {
-                "INFP" => {temperaments.print(TemperamentType::Idealist)},
-                "INFJ" => {temperaments.print(TemperamentType::Idealist)},
-                "INTP" => {temperaments.print(TemperamentType::Rational)},
-                "INTJ" => {temperaments.print(TemperamentType::Rational)},
-                "ISFP" => {temperaments.print(TemperamentType::Artisan)},
-                "ISFJ" => {temperaments.print(TemperamentType::Guardian)},
-                "ISTP" => {temperaments.print(TemperamentType::Artisan)},
-                "ISTJ" => {temperaments.print(TemperamentType::Guardian)},
-                "ENFP" => {temperaments.print(TemperamentType::Idealist)},
-                "ENFJ" => {temperaments.print(TemperamentType::Idealist)},
-                "ENTP" => {temperaments.print(TemperamentType::Rational)},
-                "ENTJ" => {temperaments.print(TemperamentType::Rational)},
-                "ESFP" => {temperaments.print(TemperamentType::Artisan)},
-                "ESFJ" => {temperaments.print(TemperamentType::Guardian)},
-                "ESTP" => {temperaments.print(TemperamentType::Artisan)},
-                "ESTJ" => {temperaments.print(TemperamentType::Guardian)},
-                _ => {println!("Error: Temperament not found")}
-            }
+            keirsey.print_temperament();
+
             set_color(Color::Yellow);
             println!("\nWould you like to take the test again? (Y/N)");
             set_color(Color::Green);
@@ -68,10 +43,17 @@ fn main() {
     }
 }
 
+fn welcome_the_avatar() {
+    set_color(Color::Cyan);
+    println!("Water. Earth. Fire. Air. Long ago, the four temperaments thrived in harmony. Then, everything changed when the Rational Nation sought dominance. Only the Avatar, master of all four temperaments, could bring balance, but when the world needed them most, they vanished. A hundred years passed, and my sibling and I discovered the new Avatar, an idealist named Keirsey.");
+    set_color(Color::Reset);
+}
+
 #[derive(Debug, Deserialize, Clone)]
 struct Keirsey {
     questionnaire: Questionnaire,
     answer_grid: ScoringGrid,
+    temperaments: Temperaments,
 }
 
 impl Keirsey {
@@ -79,6 +61,7 @@ impl Keirsey {
         Keirsey {
             questionnaire,
             answer_grid: ScoringGrid::new(),
+            temperaments: serde_json::from_reader(BufReader::new(File::open("temperaments.json").unwrap())).unwrap()
         }
     }
     fn ask_questions(&mut self) {
@@ -89,6 +72,66 @@ impl Keirsey {
             let answer = question.ask();
             self.answer_grid.add_score(Score::new(answer));
             clear_terminal();
+        }
+    }
+    fn print_temperament(&self) {
+        let temperament = self.answer_grid.get_temperament();
+
+        set_color(Color::White);
+        println!("Your temperament is: ");
+        set_color(Color::Green);
+        print!("{}\n", temperament);
+        set_color(Color::Reset);
+
+        match temperament.as_str() {
+            "ISFP" => {self.temperaments.print(TemperamentType::Artisan)},
+            "XSFP" => {self.temperaments.print(TemperamentType::Artisan)},
+            "XSTP" => {self.temperaments.print(TemperamentType::Artisan)},
+            "XSXP" => {self.temperaments.print(TemperamentType::Artisan)},
+            "ESXP" => {self.temperaments.print(TemperamentType::Artisan)},
+            "ISTP" => {self.temperaments.print(TemperamentType::Artisan)},
+            "ISXP" => {self.temperaments.print(TemperamentType::Artisan)},
+            "ESFP" => {self.temperaments.print(TemperamentType::Artisan)},
+            "ESTP" => {self.temperaments.print(TemperamentType::Artisan)},
+
+            "INFP" => {self.temperaments.print(TemperamentType::Idealist)},
+            "INFJ" => {self.temperaments.print(TemperamentType::Idealist)},
+            "ENFP" => {self.temperaments.print(TemperamentType::Idealist)},
+            "ENFJ" => {self.temperaments.print(TemperamentType::Idealist)},
+            "XNFX" => {self.temperaments.print(TemperamentType::Idealist)},
+            "ENFX" => {self.temperaments.print(TemperamentType::Idealist)},
+            "INFX" => {self.temperaments.print(TemperamentType::Idealist)},
+            "XNFJ" => {self.temperaments.print(TemperamentType::Idealist)},
+            "XNFP" => {self.temperaments.print(TemperamentType::Idealist)},
+
+            "INTP" => {self.temperaments.print(TemperamentType::Rational)},
+            "INTJ" => {self.temperaments.print(TemperamentType::Rational)},
+            "ENTP" => {self.temperaments.print(TemperamentType::Rational)},
+            "ENTJ" => {self.temperaments.print(TemperamentType::Rational)},
+            "XNTX" => {self.temperaments.print(TemperamentType::Rational)},
+            "ENTX" => {self.temperaments.print(TemperamentType::Rational)},
+            "INTX" => {self.temperaments.print(TemperamentType::Rational)},
+            "XNTJ" => {self.temperaments.print(TemperamentType::Rational)},
+            "XNTP" => {self.temperaments.print(TemperamentType::Rational)},
+
+            "ISFJ" => {self.temperaments.print(TemperamentType::Guardian)},
+            "XSFJ" => {self.temperaments.print(TemperamentType::Guardian)},
+            "ISXJ" => {self.temperaments.print(TemperamentType::Guardian)},
+            "ESXJ" => {self.temperaments.print(TemperamentType::Guardian)},
+            "XSXJ" => {self.temperaments.print(TemperamentType::Guardian)},
+            "XSTJ" => {self.temperaments.print(TemperamentType::Guardian)},
+            "ESFJ" => {self.temperaments.print(TemperamentType::Guardian)},
+            "ESTJ" => {self.temperaments.print(TemperamentType::Guardian)},
+            "ISTJ" => {self.temperaments.print(TemperamentType::Guardian)},
+
+            "XXXX" => { welcome_the_avatar()}
+            _ => {
+                println!("Your Temperament is balanced and you do not fall into any category.");
+                self.temperaments.print(TemperamentType::Artisan);
+                self.temperaments.print(TemperamentType::Guardian);
+                self.temperaments.print(TemperamentType::Idealist);
+                self.temperaments.print(TemperamentType::Rational);
+            }
         }
     }
 }
@@ -265,7 +308,7 @@ enum Answer {
 }
 
 
-#[derive(Debug, Deserialize, PartialEq)]
+#[derive(Debug, Deserialize, PartialEq, Clone)]
 struct Temperaments {
     artisan: String,
     guardian: String,
@@ -406,6 +449,31 @@ mod tests {
 
         for (i, keirsey) in keirseys.iter().enumerate() {
             assert_eq!(keirsey.answer_grid.get_temperament(), answer_array[i], "{:?}", keirsey.answer_grid);
+        }
+
+    }
+
+    #[test]
+    fn test_temperament_type() {
+        let mut possible_temperaments
+            = vec![];
+
+        let possible = [["E", "I", "X"], ["S", "N", "X"],["F", "T", "X"], ["J", "P", "X"]];
+
+
+        for &first_letter in possible[0].iter() {
+            for &second_letter in possible[1].iter() {
+                for &third_letter in possible[2].iter() {
+                    for &fourth_letter in possible[3].iter() {
+                        let combination = format!("{}{}{}{}", first_letter, second_letter, third_letter, fourth_letter);
+                        possible_temperaments.push(combination);
+                    }
+                }
+            }
+        }
+
+        for temperament in possible_temperaments {
+            // How do i test this?
         }
 
     }
