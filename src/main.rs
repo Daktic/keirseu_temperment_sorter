@@ -348,4 +348,37 @@ mod tests {
         // The tally method should return a vector of tuples with the first value being the number of A's and the second being the number of B's
         assert_eq!(keirsey.answer_grid.tally(), vec![(10, 0), (10, 0), (10, 0), (20, 0), (10, 0), (10, 0), (20, 0), (10, 0), (10, 0), (20, 0)]);
     }
+
+    #[test]
+    fn test_temperaments() {
+        let mut keirsey_a: Keirsey = Keirsey::new(
+            serde_json::from_reader(
+                BufReader::new(
+                    File::open("questions.json").unwrap()
+                )
+            ).unwrap()
+        );
+        let mut keirsey_b: Keirsey = Keirsey::new(
+            serde_json::from_reader(
+                BufReader::new(
+                    File::open("questions.json").unwrap()
+                )
+            ).unwrap()
+        );
+
+        for _ in keirsey_a.questionnaire.questions.iter().enumerate() {
+            keirsey_a.answer_grid.add_score(Score::new(Answer::A));
+        }
+        for _ in keirsey_b.questionnaire.questions.iter().enumerate() {
+            keirsey_b.answer_grid.add_score(Score::new(Answer::B));
+        }
+
+        keirsey_a.answer_grid.get_temperament();
+        keirsey_b.answer_grid.get_temperament();
+
+        // All A answers produces ESTJ and all B answers produces INFP
+        assert_eq!(keirsey_a.answer_grid.get_temperament(), "ESTJ".to_string());
+        assert_eq!(keirsey_b.answer_grid.get_temperament(), "INFP".to_string());
+
+    }
 }
