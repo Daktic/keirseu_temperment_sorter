@@ -186,9 +186,8 @@ impl ScoringGrid {
             }
             i += 1;
         }
-        dbg!(groups);
-        }
     }
+}
 
 
 #[derive(Debug, Deserialize)]
