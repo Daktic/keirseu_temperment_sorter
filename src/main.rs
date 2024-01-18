@@ -213,7 +213,6 @@ impl ScoringGrid {
         let groups = self.tally();
         let mut temperment = String::new();
         for (i, group) in groups.iter().enumerate() {
-            dbg!(i, group);
             if i == 0 {
                 if group.0 > group.1 {
                     temperment.push('E');
@@ -377,45 +376,37 @@ mod tests {
         for (i, mut keirsey) in keirseys.iter_mut().enumerate() {
             for j in 0..70 {
                 let pattern_variable = match i {
-                    0 => false,                                                                 // ESTJ
-                    1 => j % 7 == 0,                                                            // ISTJ
-                    2 => (j-1) % 7 == 0 || j == 2,                                              // ENTJ
-                    3 => (j-2) % 7 == 0 && j != 2 || (j-3) % 7 == 0 || j == 4,                  // ESFJ
-                    4 => (j-3) % 7 == 0 && j == 4 || (j-5) % 7 == 0 || j == 6,                  // ESTP
-                    5 => j % 7 == 0 || (j-1) % 7 == 0 || j == 2,                                // INTJ
-                    6 => j % 7 == 0 || (j-2) % 7 == 0 && j != 2 || (j-3) % 7 == 0 || j == 4,    // ISFJ
-                    7 => j % 7 == 0 || (j-5) % 7 == 0 || j == 6,                                // ISTP
-                    8 => (j-1) % 7 == 0 || j == 2 || (j-3) % 7 == 0 || j == 4,                  // ENFJ
-                    9 => (j-3) % 7 == 0 || j == 4 || (j-5) % 7 == 0 || j == 6,                  // ESFP
-                    10 => (j-1) % 7 == 0 || j == 2 || (j-5) % 7 == 0 || j == 6,                 // ENTP
-                    11 => j % 7 == 0 || (j-1) % 7 == 0 || j == 2 || (j-3) % 7 == 0 || j == 4,   // INFJ
-                    12 => j % 7 == 0 || (j-3) % 7 == 0 || j == 4 || (j-5) % 7 == 0 || j == 6,   // ISFP
-                    13 => j % 7 == 0 || (j-1) % 7 == 0 || j == 2 || (j-5) % 7 == 0 || j == 6,   // INTP
+                    0 => false,                                                                             // ESTJ
+                    1 => j % 7 == 0,                                                                        // ISTJ
+                    2 => (j-1) % 7 == 0 || j == 2,                                                          // ENTJ
+                    3 => (j-2) % 7 == 0 && j != 2 || (j-3) % 7 == 0 || j == 4,                              // ESFJ
+                    4 => (j-3) % 7 == 0 && j == 4 || (j-5) % 7 == 0 || j == 6,                              // ESTP
+                    5 => j % 7 == 0 || (j-1) % 7 == 0 || j == 2,                                            // INTJ
+                    6 => j % 7 == 0 || (j-2) % 7 == 0 && j != 2 || (j-3) % 7 == 0 || j == 4,                // ISFJ
+                    7 => j % 7 == 0 || (j-5) % 7 == 0 || j == 6,                                            // ISTP
+                    8 => (j-1) % 7 == 0 || j == 2 || (j-3) % 7 == 0 || j == 4,                              // ENFJ
+                    9 => (j-3) % 7 == 0 || j == 4 || (j-5) % 7 == 0 || j == 6,                              // ESFP
+                    10 => (j-1) % 7 == 0 || j == 2 || (j-5) % 7 == 0 || j == 6,                             // ENTP
+                    11 => j % 7 == 0 || (j-1) % 7 == 0 || j == 2 || (j-3) % 7 == 0 || j == 4,               // INFJ
+                    12 => j % 7 == 0 || (j-3) % 7 == 0 || j == 4 || (j-5) % 7 == 0 || j == 6,               // ISFP
+                    13 => j % 7 == 0 || (j-1) % 7 == 0 || j == 2 || (j-5) % 7 == 0 || j == 6,               // INTP
                     14 => (j-1) % 7 == 0 || j == 2 || (j-3) % 7 == 0 || j == 4 || (j-5) % 7 == 0 || j == 6, // ENFP
-                    15 => (j-1) % 7 == 0,                                                       // EXTJ
-                    _ => {true}                                                                 // INFP
+                    _ => {true}                                                                             // INFP
                 };
                 let score = if pattern_variable {
                     Score::new(Answer::B)
                 } else {
                     Score::new(Answer::A)
                 };
-                // dbg!(i+1, j+1, &score);
                 keirsey.answer_grid.add_score(score);
             }
-            // dbg!(i+1, &keirsey.answer_grid.tally(), &keirsey.answer_grid.get_temperament());
         }
 
         let answer_array = ["ESTJ","ISTJ","ENTJ","ESFJ","ESTP","INTJ","ISFJ","ISTP","ENFJ","ESFP","ENTP","INFJ","ISFP","INTP","ENFP","INFP"];
 
-        // for (i, keirsey) in keirseys.iter().enumerate() {
-        //
-        //     assert_eq!(keirsey.answer_grid.get_temperament(), answer_array[i], "{:?}", keirsey.answer_grid);
-        //
-        // }
+        for (i, keirsey) in keirseys.iter().enumerate() {
+            assert_eq!(keirsey.answer_grid.get_temperament(), answer_array[i], "{:?}", keirsey.answer_grid);
+        }
 
-        let idx = 14;
-        dbg!(&keirseys[idx].answer_grid.tally(), &keirseys[idx].answer_grid.get_temperament());
-        assert_eq!(keirseys[idx].answer_grid.get_temperament(), answer_array[idx]);
     }
 }
