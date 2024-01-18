@@ -28,8 +28,9 @@ fn main() {
             let mut keirsey = Keirsey::new(questionnaire);
 
             keirsey.ask_questions();
+            dbg!(keirsey.answer_grid);
 
-            println!("{}", keirsey)
+            // println!("{}", keirsey)
 
         }
         Err(error) => println!("Error: {:?}", error),
@@ -39,38 +40,37 @@ fn main() {
 #[derive(Debug, Deserialize)]
 struct Keirsey {
     questionnaire: Questionnaire,
-    answers: (u32, u32),
+    answer_grid: ScoringGrid,
 }
 
 impl Keirsey {
     fn new(questionnaire:Questionnaire) -> Keirsey {
         Keirsey {
             questionnaire,
-            answers: (0, 0),
+            answer_grid: ScoringGrid::new(),
         }
     }
     fn ask_questions(&mut self) {
         //Clear the terminal and set the title
         execute!(std::io::stdout(), Clear(ClearType::All), SetTitle("Keirsey Temperament Sorter")).unwrap();
-        for question in &self.questionnaire.questions {
-            print_score(self.answers.0 as u8, self.answers.1 as u8);
-            let (a, b) = question.ask();
-            self.answers.0 += a;
-            self.answers.1 += b;
+        for (i, question) in self.questionnaire.questions.iter().enumerate() {
+            println!("Question {} of {}", i+1, self.questionnaire.questions.len());
+            let answer = question.ask();
+            self.answer_grid.add_score(Score::new(i as u32, answer));
             clear_terminal();
         }
     }
 }
 
-impl Display for Keirsey {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let (a, b) = self.answers;
-        let total = a + b;
-        let a_percentage = a as f32 / total as f32 * 100.0;
-        let b_percentage = b as f32 / total as f32 * 100.0;
-        write!(f, "A: {:.2}%\nB: {:.2}%", a_percentage, b_percentage)
-    }
-}
+// impl Display for Keirsey {
+//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+//         let (a, b) = self.answers;
+//         let total = a + b;
+//         let a_percentage = a as f32 / total as f32 * 100.0;
+//         let b_percentage = b as f32 / total as f32 * 100.0;
+//         write!(f, "A: {:.2}%\nB: {:.2}%", a_percentage, b_percentage)
+//     }
+// }
 
 #[derive(Debug, Deserialize)]
 struct Questionnaire {
@@ -83,7 +83,7 @@ struct Question {
 }
 
 impl Question {
-    fn ask(&self) -> (u32, u32) {
+    fn ask(&self) -> Answer {
 
         set_color(Color::Green);
         println!("\n{}", self.question);
@@ -101,9 +101,9 @@ impl Question {
         let mut input = String::new();
         std::io::stdin().read_line(&mut input).expect("Failed to read line");
         if input.trim() == "A" {
-            return (1, 0);
+            return Answer::A;
         } else if input.trim() == "B" {
-            return (0, 1);
+            return Answer::B;
         } else {
             clear_terminal();
             set_color(Color::Red);
@@ -117,10 +117,10 @@ impl Question {
 #[derive(Debug, Deserialize)]
 struct Score {
     id: u32,
-    value: (u32, u32),
+    value: Answer,
 }
 impl Score {
-    fn new(id: u32, value: (u32, u32)) -> Score {
+    fn new(id: u32, value: Answer) -> Score {
         Score {
             id,
             value,
@@ -162,6 +162,11 @@ enum Options {
     A(String),
     B(String),
 }
+#[derive(Debug, Deserialize, PartialEq)]
+enum Answer {
+    A,
+    B,
+}
 
 fn set_color(color: Color) {
     execute!(std::io::stdout(), SetForegroundColor(color)).unwrap();
@@ -189,25 +194,82 @@ mod tests {
     use super::*;
     #[test]
     fn test_score() {
-        let score = Score::new(1, (1, 2));
+        let score = Score::new(1, Answer::A);
         assert_eq!(score.id, 1);
-        assert_eq!(score.value, (1, 2));
+        assert_eq!(score.value, Answer::A);
     }
 
     #[test]
-fn test_scoring_grid() {
+    fn test_scoring_grid() {
         let mut scoring_grid = ScoringGrid::new();
-        scoring_grid.add_score(Score::new(1, (0, 1)));
-        scoring_grid.add_score(Score::new(2, (0, 1)));
-        scoring_grid.add_score(Score::new(3, (0, 1)));
-        scoring_grid.add_score(Score::new(4, (1, 0)));
-        scoring_grid.add_score(Score::new(5, (1, 0)));
-        scoring_grid.add_score(Score::new(6, (1, 0)));
-        scoring_grid.add_score(Score::new(7, (1, 0)));
-        scoring_grid.add_score(Score::new(8, (0, 1)));
+        scoring_grid.add_score(Score::new(1, Answer::A));
+        scoring_grid.add_score(Score::new(2, Answer::B));
+        scoring_grid.add_score(Score::new(3, Answer::B));
+        scoring_grid.add_score(Score::new(4, Answer::A));
+        scoring_grid.add_score(Score::new(5, Answer::A));
+        scoring_grid.add_score(Score::new(6, Answer::A));
+        scoring_grid.add_score(Score::new(7, Answer::A));
+        scoring_grid.add_score(Score::new(8, Answer::B));
         dbg!(&scoring_grid);
 
         assert_eq!(scoring_grid.scores.len(), 2);
 
+    }
+
+    #[test]
+    fn test_talley() {
+        let mut keirsey = Keirsey::new(Questionnaire {
+            questions: vec![
+                Question {
+                    question: "Question 1".to_string(),
+                    options: vec![
+                        Options::A("Option 1".to_string()),
+                        Options::B("Option 2".to_string()),
+                    ],
+                },
+                Question {
+                    question: "Question 2".to_string(),
+                    options: vec![
+                        Options::A("Option 1".to_string()),
+                        Options::B("Option 2".to_string()),
+                    ],
+                },
+                Question {
+                    question: "Question 3".to_string(),
+                    options: vec![
+                        Options::A("Option 1".to_string()),
+                        Options::B("Option 2".to_string()),
+                    ],
+                },
+                Question {
+                    question: "Question 4".to_string(),
+                    options: vec![
+                        Options::A("Option 1".to_string()),
+                        Options::B("Option 2".to_string()),
+                    ],
+                },
+                Question {
+                    question: "Question 5".to_string(),
+                    options: vec![
+                        Options::A("Option 1".to_string()),
+                        Options::B("Option 2".to_string()),
+                    ],
+                },
+                Question {
+                    question: "Question 6".to_string(),
+                    options: vec![
+                        Options::A("Option 1".to_string()),
+                        Options::B("Option 2".to_string()),
+                    ],
+                },
+                Question {
+                    question: "Question 7".to_string(),
+                    options: vec![
+                        Options::A("Option 1".to_string()),
+                        Options::B("Option 2".to_string()),
+                    ],
+                },
+            ],
+        });
     }
 }
