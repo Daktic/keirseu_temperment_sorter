@@ -25,12 +25,36 @@ fn main() {
                 }
             };
 
+            let temperaments:Temperaments = serde_json::from_reader(BufReader::new(File::open("temperaments.json").unwrap())).unwrap();
+                println!("{:?}", temperaments);
+
             let mut keirsey = Keirsey::new(questionnaire);
 
             keirsey.ask_questions();
-            dbg!(keirsey.answer_grid);
-
-            // println!("{}", keirsey)
+            let temperament = keirsey.answer_grid.get_temperament();
+            set_color(Color::White);
+            println!("Your temperament is: ");
+            set_color(Color::Green);
+            print!("{}", temperament);
+            match temperament.as_str() {
+                "INFP" => {temperaments.print(TemperamentType::Idealist)},
+                "INFJ" => {temperaments.print(TemperamentType::Idealist)},
+                "INTP" => {temperaments.print(TemperamentType::Rational)},
+                "INTJ" => {temperaments.print(TemperamentType::Rational)},
+                "ISFP" => {temperaments.print(TemperamentType::Artisan)},
+                "ISFJ" => {temperaments.print(TemperamentType::Guardian)},
+                "ISTP" => {temperaments.print(TemperamentType::Artisan)},
+                "ISTJ" => {temperaments.print(TemperamentType::Guardian)},
+                "ENFP" => {temperaments.print(TemperamentType::Idealist)},
+                "ENFJ" => {temperaments.print(TemperamentType::Idealist)},
+                "ENTP" => {temperaments.print(TemperamentType::Rational)},
+                "ENTJ" => {temperaments.print(TemperamentType::Rational)},
+                "ESFP" => {temperaments.print(TemperamentType::Artisan)},
+                "ESFJ" => {temperaments.print(TemperamentType::Guardian)},
+                "ESTP" => {temperaments.print(TemperamentType::Artisan)},
+                "ESTJ" => {temperaments.print(TemperamentType::Guardian)},
+                _ => {println!("Error: Temperament not found")}
+            }
 
         }
         Err(error) => println!("Error: {:?}", error),
@@ -62,15 +86,6 @@ impl Keirsey {
     }
 }
 
-// impl Display for Keirsey {
-//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-//         let (a, b) = self.answers;
-//         let total = a + b;
-//         let a_percentage = a as f32 / total as f32 * 100.0;
-//         let b_percentage = b as f32 / total as f32 * 100.0;
-//         write!(f, "A: {:.2}%\nB: {:.2}%", a_percentage, b_percentage)
-//     }
-// }
 
 #[derive(Debug, Deserialize)]
 struct Questionnaire {
@@ -234,6 +249,33 @@ enum Options {
 enum Answer {
     A,
     B,
+}
+
+
+#[derive(Debug, Deserialize, PartialEq)]
+struct Temperaments {
+    artisan: String,
+    guardian: String,
+    idealist: String,
+    rational: String,
+}
+#[derive(Debug, Deserialize, PartialEq)]
+enum TemperamentType {
+    Artisan,
+    Guardian,
+    Idealist,
+    Rational,
+}
+impl Temperaments {
+    fn print(&self, temperment: TemperamentType) {
+        match temperment {
+            TemperamentType::Artisan => println!("{}", self.artisan),
+            TemperamentType::Guardian => println!("{}", self.guardian),
+            TemperamentType::Idealist => println!("{}", self.idealist),
+            TemperamentType::Rational => println!("{}", self.rational),
+        }
+    }
+
 }
 
 fn set_color(color: Color) {
