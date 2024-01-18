@@ -36,6 +36,7 @@ fn main() {
             println!("Your temperament is: ");
             set_color(Color::Green);
             print!("{}", temperament);
+            change_color(Color::Reset);
             match temperament.as_str() {
                 "INFP" => {temperaments.print(TemperamentType::Idealist)},
                 "INFJ" => {temperaments.print(TemperamentType::Idealist)},
